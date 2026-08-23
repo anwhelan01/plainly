@@ -1,5 +1,21 @@
 # Plainly
 
+<div align="center">
+
+<p align="center">
+  <img src="public/og.jpg" alt="Plainly" width="100%" />
+</p>
+
+<p>
+  <a href="https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode"><img src="https://img.shields.io/badge/Hermes-Bot_Mode-6d28d9?style=for-the-badge&labelColor=0a0a0a" alt="Hermes Bot Mode" /></a>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&labelColor=0a0a0a&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/license-MIT-fbbf24?style=for-the-badge&labelColor=0a0a0a" alt="MIT" />
+  <img src="https://img.shields.io/badge/public-111111?style=for-the-badge&labelColor=0a0a0a" alt="public" />
+</p>
+
+</div>
+
+
 A copy desk for Claude-lish.
 
 Paste AI writing. The desk marks throat-clearing, brochure words, and Google
@@ -100,3 +116,29 @@ Anti-slop rules are original to this project. See [NOTICE.md](NOTICE.md).
 
 MIT for original code and the anti-slop appendix. Google's source material
 stays under its licenses.
+
+---
+
+## Hermes Bot Mode
+
+This desk is a named [Hermes](https://hermes-agent.nousresearch.com/) Bot — own model slot, memory, skills, routines, and `@mentions`.
+
+```bash
+# once
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+
+# this repo
+./scripts/install-hermes-bot.sh
+hermes -p plainly chat
+```
+
+In Hermes Desktop the Bot lands under **Bots**. Type `@plainly` from any chat; group it with the rest of the k3ss roster (`desks`).
+
+| File | Role |
+| --- | --- |
+| [`AGENTS.md`](AGENTS.md) | Project harness Hermes loads at session start |
+| [`.hermes/SOUL.md`](.hermes/SOUL.md) | Bot personality |
+| [`.hermes/bot.yaml`](.hermes/bot.yaml) | Roster, skills, groups |
+| [`.hermes/skills/plainly/SKILL.md`](.hermes/skills/plainly/SKILL.md) | Portable skill |
+
+Docs: [Bot Mode](https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode) · [Context files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) · [Skills](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills)
