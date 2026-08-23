@@ -1,0 +1,18 @@
+name: plainly
+title: Plainly
+description: "A copy desk for Claude-lish. Lint, rewrite, export a Google-style writing skill."
+avatar:
+  silhouette: boxy
+  color: slate
+soul: SOUL.md
+skills:
+  - plainly
+toolsets:
+  - terminal
+  - web
+groups:
+  - desks
+mentions:
+  - bullshit-radar
+agent:
+  bot_mode_protocol: true

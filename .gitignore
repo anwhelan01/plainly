@@ -17,3 +17,7 @@ AGENTS.project.md
 public/__grok/
 .nitro/
 coverage/
+
+# Hermes personal overrides
+AGENTS.override.md
+.hermes/*.local.yaml
