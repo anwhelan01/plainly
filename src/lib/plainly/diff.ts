@@ -13,6 +13,10 @@ export function diffWords(before: string, after: string): DiffToken[] {
   const b = tokenize(after);
   const n = a.length;
   const m = b.length;
+  if (n * m > 1_000_000) {
+    if (before === after) return [{ type: "equal", value: before }];
+    return [{ type: "remove", value: before }, { type: "add", value: after }];
+  }
   const dp: number[][] = Array.from({ length: n + 1 }, () =>
     new Array<number>(m + 1).fill(0),
   );

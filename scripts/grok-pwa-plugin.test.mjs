@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import {
   appNameFromHost,
-  createHeadInjector,
+  createHeadInjector as rawCreateHeadInjector,
   grokXCreatorHeadTags,
-  injectGrokPwaHead,
+  injectGrokPwaHead as rawInjectGrokPwaHead,
   isDocumentPath,
   isInstallQuery,
   publicAppHost,
@@ -18,6 +18,10 @@ import {
   stripInstallParams,
 } from "./grok-pwa-shared.mjs";
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
+
+const EMPTY_IDENTITY_ROOT = mkdtempSync(join(tmpdir(), "pwa-fixture-"));
+const injectGrokPwaHead = (html, options = {}) => rawInjectGrokPwaHead(html, { cwd: EMPTY_IDENTITY_ROOT, ...options });
+const createHeadInjector = (options = {}) => rawCreateHeadInjector({ cwd: EMPTY_IDENTITY_ROOT, ...options });
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -486,16 +490,13 @@ test("renders the manifest with the per-app name", () => {
 test("vite config keeps the nitro serverDir wiring", () => {
   const viteConfig = readFileSync(join(TEMPLATE_ROOT, "vite.config.ts"), "utf8");
   assert.match(viteConfig, /serverDir:\s*"\.\/server"/);
-  assert.match(viteConfig, /grokPwaPlugin\(\)/);
+  assert.doesNotMatch(viteConfig, /grokPwaPlugin\(\)/);
 });
 
-test("nitro middleware and its bundled assets exist", () => {
-  const middleware = readFileSync(join(TEMPLATE_ROOT, "server/middleware/grok-pwa.ts"), "utf8");
-  assert.match(middleware, /install-page\.html\?raw/);
-  assert.match(middleware, /virtual:grok-og-identity/);
-  readFileSync(join(TEMPLATE_ROOT, "scripts/install-page.html"));
-  readFileSync(join(TEMPLATE_ROOT, "public/__grok/icon-180.png"));
-  readFileSync(join(TEMPLATE_ROOT, "public/__grok/install/styles.css"));
+test("release config uses a local favicon without external builder scripts", () => {
+  readFileSync(join(TEMPLATE_ROOT, "public/favicon.svg"));
+  const config = readFileSync(join(TEMPLATE_ROOT, "vite.config.ts"), "utf8");
+  assert.doesNotMatch(config, /grokPwaPlugin/);
 });
 
 test("vite plugin bakes og identity as a virtual module", () => {

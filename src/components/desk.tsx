@@ -21,6 +21,8 @@ import type { Dialect, Finding } from "@/lib/plainly/types";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = DRAFT_STORAGE_KEY;
+const REWRITE_ENABLED = import.meta.env.VITE_PLAINLY_REWRITE_ENABLED === "true";
+const DRAFT_LIMIT = 20000;
 
 export function Desk() {
   const [text, setText] = useState(SAMPLES[0]!.text);
@@ -32,28 +34,29 @@ export function Desk() {
   const [notes, setNotes] = useState<string[]>([]);
   const [copied, setCopied] = useState<"draft" | "rewrite" | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
-  const hydrated = useRef(false);
+  const [hydrated, setHydrated] = useState(false);
+  const [rewriteSource, setRewriteSource] = useState("");
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setText(saved);
+      if (saved !== null) setText(saved.slice(0, DRAFT_LIMIT));
     } catch {
       /* ignore */
     }
-    hydrated.current = true;
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!hydrated.current) return;
+    if (!hydrated) return;
     try {
       localStorage.setItem(STORAGE_KEY, text);
     } catch {
       /* ignore */
     }
-  }, [text]);
+  }, [text, hydrated]);
 
-  const result = useMemo(() => lint(text), [text]);
+  const result = useMemo(() => lint(text, dialect), [text, dialect]);
   const counts = countBySeverity(result.findings);
   const overLimit = text.length > REWRITE_MAX_CHARS;
 
@@ -68,6 +71,8 @@ export function Desk() {
   }
 
   async function runRewrite() {
+    if (!REWRITE_ENABLED || rewriting) return;
+    const source = text;
     if (overLimit) {
       toast.error(`Keep the draft under ${REWRITE_MAX_CHARS.toLocaleString()} characters.`);
       return;
@@ -83,6 +88,7 @@ export function Desk() {
         toast.error(response.error);
         return;
       }
+      setRewriteSource(source);
       setRewritten(response.rewritten);
       setNotes(response.notes);
       setPane("rewrite");
@@ -105,6 +111,7 @@ export function Desk() {
 
   function applyRewrite() {
     if (!rewritten) return;
+    if (text !== rewriteSource) { toast.error("Your draft changed. Run Rewrite again before replacing it."); return; }
     setText(rewritten);
     setPane("findings");
     toast.success("Rewrite is now the draft.");
@@ -114,8 +121,7 @@ export function Desk() {
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-xl text-sm text-muted">
-          Paste AI writing. The desk marks Claude-lish as you type, then rewrites it
-          to Google-style English without changing the facts.
+          Paste a draft to check its wording locally. Scores are style heuristics, not an AI detector or a fact check. Review any AI rewrite before using it.
         </p>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs uppercase tracking-wider text-faint">Dialect</span>
@@ -182,6 +188,7 @@ export function Desk() {
           <Textarea
             ref={areaRef}
             value={text}
+            maxLength={DRAFT_LIMIT}
             onChange={(event) => setText(event.target.value)}
             onKeyDown={(event) => {
               if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
@@ -199,18 +206,19 @@ export function Desk() {
               {result.wordCount} words · {text.length.toLocaleString()} chars
               {overLimit ? ` · over ${REWRITE_MAX_CHARS.toLocaleString()} limit` : ""}
             </p>
-            <Button onClick={() => void runRewrite()} disabled={rewriting} className="w-full sm:w-auto">
+            <Button onClick={() => void runRewrite()} disabled={rewriting || !REWRITE_ENABLED || !text.trim() || overLimit} className="w-full sm:w-auto">
               {rewriting ? (
                 <LoaderCircle className="animate-spin" />
               ) : (
                 <PencilLine />
               )}
-              {rewriting ? "Rewriting" : "Rewrite"}
+              {rewriting ? "Rewriting" : REWRITE_ENABLED ? "Rewrite" : "AI rewrite off"}
               <kbd className="hidden rounded bg-paper/20 px-1.5 py-0.5 font-mono text-[10px] sm:inline">
                 ⌘↵
               </kbd>
             </Button>
           </div>
+          <p className="mt-3 text-xs text-muted">Drafts are saved in this browser. Clear removes the saved text. {REWRITE_ENABLED ? "Rewrite sends your draft to xAI. Avoid personal or confidential information." : "Local checks and skill export do not send your text to an AI service."}</p>
         </section>
 
         <section className="rounded-[var(--radius-lg)] bg-paper-raised p-3 shadow-[var(--shadow-border)] sm:p-4">
@@ -236,7 +244,7 @@ export function Desk() {
             />
           ) : (
             <RewriteView
-              original={text}
+              original={rewriteSource}
               rewritten={rewritten}
               notes={notes}
               rewriting={rewriting}
@@ -311,7 +319,7 @@ function FindingsList({
       <div className="flex min-h-[28rem] flex-col items-center justify-center rounded-[var(--radius-md)] bg-add-soft/40 px-6 text-center">
         <p className="font-display text-2xl text-add">Clean enough</p>
         <p className="mt-2 max-w-sm text-sm text-muted">
-          No Claude-lish, brochure words, or Google-style faults in this draft.
+          No issues matched the selected rules. This does not verify accuracy or detect all writing problems.
         </p>
       </div>
     );
