@@ -1,6 +1,6 @@
 # Repository disposition — 12 September 2026
 
-Decision basis: Tony wants a small portfolio of low-maintenance side-hustle products. These are recommendations about active commercial effort, not a deletion instruction. No repositories were archived or deleted in this release.
+Decision basis: Tony wants a small portfolio of low-maintenance side-hustle products. These are recommendations about active commercial effort, not a deletion instruction. Subsequently, Tony authorised archiving eleven entries; those archive statuses were verified. No repositories were deleted.
 
 ## Build now
 
@@ -9,7 +9,7 @@ Decision basis: Tony wants a small portfolio of low-maintenance side-hustle prod
 | barrow | One digital customer-admin pack, static storefront, external paid delivery |
 | plainly | Free browser-based writing checker and skill exporter; optional bounded rewrite |
 
-## Archive from the active side-hustle portfolio
+## Original archive recommendation — subsequent decision below
 
 | Repository | Reason to drop from active commercial work |
 |---|---|
@@ -44,3 +44,7 @@ These are not all proven byte-identical duplicates. Similar purpose is the reaso
 | Other salvaged repos and archives | Not nominated for deletion on this evidence. Confirm unique assets and dependencies first. |
 
 The throwaway `pat-write-test-20260827-163611` can be reviewed for housekeeping separately; no deletion has been performed. The empty `vertical-experts-agentos` and `stunning-2026` repositories had no code in the retrieved inventory, but may retain useful issues/history which this snapshot audit did not inspect.
+
+## Executed decision
+
+Tony retained `coreys-thing` and `bullshit-radar`; both remain active. All other eleven repositories in the original archive table were archived and verified on GitHub. Do not archive the two retained exceptions. See `CHIEF_OF_STAFF_HANDOVER.md` for the launch work.

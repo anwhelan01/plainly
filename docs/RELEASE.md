@@ -1,5 +1,7 @@
 # Plainly release
 
+> See [Chief of staff handover](CHIEF_OF_STAFF_HANDOVER.md) for crew assignments, dependencies and deployment acceptance gates.
+
 This release is a free local-in-the-browser writing checker and skill exporter. It has no checkout or paid entitlement claims. A future paid pack requires its own value proposition and fulfilment; it is not represented as shipped here.
 
 ## Build and run
