@@ -21,3 +21,5 @@ Provider behaviour was exercised with fake structured responses, malformed outpu
 Not verified: a real xAI account/model, public DNS/TLS, service supervisor, live provider pricing, production merchant transactions (there is no checkout in Plainly), multi-host quota sharing. Optional live AI rewriting stays disabled until configured and tested by the operator.
 
 The inherited template suite initially failed because it depended on an ignored app-env file, actual product branding as a generic test fixture, and generated PWA assets. The config default is now committed, generic tests use isolated fixture directories, and the removed builder runtime is checked as absent from release config. No product test failures were suppressed.
+
+Initial GitHub CI stopped at dependency installation: its bundled npm 10 rejected a peer-dependency entry which npm 11.9.0 accepted locally. The release now pins Node 24.19.0 and npm 11.9.0 in CI and the documented toolchain; subsequent runner results are available on the PR.

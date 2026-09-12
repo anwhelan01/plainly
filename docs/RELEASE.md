@@ -4,7 +4,7 @@ This release is a free local-in-the-browser writing checker and skill exporter. 
 
 ## Build and run
 
-Node 22.18+. From a clean checkout:
+Node 24.19.0 and npm 11.9.0. Use `nvm use` and `npm install --global npm@11.9.0`, then from a clean checkout:
 
 ```sh
 npm ci
@@ -52,3 +52,5 @@ Source tests, production build, local production HTTP checks and browser checks 
 ## Runtime independence
 
 The release configuration no longer injects the Grok App Builder extension script or preview authentication into product pages. `app-env.json` records the no-auth default in source control. Retained template utility tests use isolated identity fixtures, rather than assuming the product has no branding.
+
+The tested runtime is pinned in `.nvmrc` and `packageManager`. Use npm 11.9.0: npm 10 on the initial GitHub runner interpreted the peer-dependency lock differently and rejected it. The CI workflow now uses the same Node/npm versions as local validation.

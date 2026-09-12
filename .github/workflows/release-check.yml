@@ -9,11 +9,12 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6.0.3
+      - uses: actions/setup-node@v6.5.0
         with:
-          node-version: '22'
+          node-version: '24.19.0'
           cache: npm
+      - run: npm install --global npm@11.9.0
       - run: npm ci
       - run: npm run verify:release
       - run: npx playwright install --with-deps chromium
