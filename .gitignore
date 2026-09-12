@@ -21,3 +21,5 @@ coverage/
 # Hermes personal overrides
 AGENTS.override.md
 .hermes/*.local.yaml
+
+.plainly-data/

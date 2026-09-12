@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { reserveRewrite } from "./quota.server";
+import { requestRewrite } from "./rewrite-provider.server";
 import type { Dialect } from "./types.ts";
 
 const MAX_CHARS = 8000;
@@ -43,56 +45,19 @@ export const rewriteDraft = createServerFn({ method: "POST" })
   .validator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
     const apiKey = process.env.XAI_API_KEY;
-    if (!apiKey) {
-      return { ok: false as const, error: "Rewrite is not available in this environment." };
+    const model = process.env.XAI_MODEL;
+    const directory = process.env.PLAINLY_DATA_DIR;
+    if (process.env.PLAINLY_REWRITE_ENABLED !== "true" || !apiKey || !model || !directory) {
+      return { ok: false as const, error: "AI rewrite is not enabled here. Local checks and skill export still work." };
     }
-
-    const res = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "grok-4.5",
-        temperature: 0.2,
-        max_tokens: 3500,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: SYSTEM },
-          {
-            role: "user",
-            content: `${dialectHint(data.dialect)}\n\n---DRAFT---\n${data.text}`,
-          },
-        ],
-      }),
-    });
-
-    if (!res.ok) {
-      return { ok: false as const, error: `Rewrite failed (${res.status}). Try again.` };
-    }
-
-    const body = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    const raw = body.choices?.[0]?.message?.content ?? "";
     try {
-      const parsed = JSON.parse(raw) as { rewritten?: string; notes?: string[] };
-      const rewritten = (parsed.rewritten ?? "").trim();
-      if (!rewritten) {
-        return { ok: false as const, error: "The desk returned an empty rewrite." };
+      if (!reserveRewrite(directory, Number(process.env.PLAINLY_DAILY_REWRITES ?? 50))) {
+        return { ok: false as const, error: "The shared rewrite allowance is busy or used up. Try later; local checks still work." };
       }
-      const notes = Array.isArray(parsed.notes)
-        ? parsed.notes.filter((note) => typeof note === "string").slice(0, 8)
-        : [];
-      return { ok: true as const, rewritten, notes };
     } catch {
-      const fallback = raw.trim();
-      if (!fallback) {
-        return { ok: false as const, error: "The desk returned an empty rewrite." };
-      }
-      return { ok: true as const, rewritten: fallback, notes: [] as string[] };
+      return { ok: false as const, error: "Rewrite is temporarily unavailable. Your draft has not changed." };
     }
+    return requestRewrite(apiKey, model, SYSTEM, `${dialectHint(data.dialect)}\n\n---DRAFT---\n${data.text}`);
   });
 
 export const REWRITE_MAX_CHARS = MAX_CHARS;

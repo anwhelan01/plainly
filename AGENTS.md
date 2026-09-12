@@ -17,7 +17,7 @@ Project-local skills: `.hermes/skills/` (also copied into `~/.hermes/profiles/pl
 
 ## Stack
 
-React 19 · TanStack Start / Router · Tailwind v4 · Zustand · Zod · Node 22.
+React 19 · TanStack Start / Router · Tailwind v4 · Zustand · Zod · Node 24.19 · npm 11.9.0.
 
 Dev: `npm run dev`. Typecheck: `npm run typecheck`. Test: `npm test`. Build: `npm run build`.
 

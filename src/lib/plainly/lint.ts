@@ -1,5 +1,5 @@
 import { RULES, RULES_BY_ID } from "./rules.ts";
-import type { Finding, LintResult } from "./types.ts";
+import type { Dialect, Finding, LintResult } from "./types.ts";
 
 const FENCE_RE = /```[\s\S]*?```/g;
 const INLINE_CODE_RE = /`[^`]+`/g;
@@ -101,12 +101,13 @@ function longSentenceFindings(text: string, ranges: Array<[number, number]>): Fi
   return findings;
 }
 
-export function lint(text: string): LintResult {
+export function lint(text: string, dialect: Dialect = "plainly"): LintResult {
   const ranges = maskedRanges(text);
   const findings: Finding[] = [];
   let counter = 0;
 
   for (const rule of RULES) {
+    if (dialect === "google" && rule.origin !== "google") continue;
     if (!rule.patterns) continue;
     for (const pattern of rule.patterns) {
       const re = new RegExp(pattern.source, "gi");

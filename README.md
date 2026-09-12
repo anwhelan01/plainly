@@ -1,5 +1,7 @@
 # Plainly
 
+> **Release update:** Read [the release guide](docs/RELEASE.md) first. It supersedes the prototype deployment and revenue claims below.
+
 <div align="center">
 
 <p align="center">
